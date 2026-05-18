@@ -71,6 +71,16 @@
       animation: fadeIn 1.2s ease-out forwards;
     }
 
+    /* Shake Animation for incorrect password */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .animate-shake {
+      animation: shake 0.5s ease-in-out;
+    }
+
     /* Polaroid Card Styling with soft spring shadows */
     .polaroid-card {
       background: white;
@@ -123,6 +133,66 @@
   <!-- Floating Canvas Layer for Blooming Petals -->
   <canvas id="petals-canvas" class="fixed inset-0 pointer-events-none z-10 hidden"></canvas>
 
+  <!-- 0. PASSWORD GATE / GIFT OPENING SCREEN (Absolute First Screen) -->
+  <div id="gift-gate" class="fixed inset-0 z-[100] flex flex-col justify-center items-center p-4 select-none overflow-hidden bg-gradient-to-tr from-brandBlush via-brandCream to-brandGold transition-all duration-1000">
+    <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#FFB6C1_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none"></div>
+    
+    <!-- Decorative Floating Floral Accents in the Background -->
+    <div class="absolute top-10 left-10 text-4xl opacity-30 animate-pulse">🌸</div>
+    <div class="absolute bottom-16 right-12 text-3xl opacity-30 animate-pulse" style="animation-delay: 1.5s;">🌷</div>
+    <div class="absolute top-1/4 right-8 text-2xl opacity-20 animate-pulse" style="animation-delay: 3s;">🌼</div>
+
+    <div id="gift-box-card" class="max-w-md w-full bg-white/80 backdrop-blur-xl border-2 border-brandPink/40 rounded-3xl p-6 sm:p-8 text-center shadow-[0_20px_50px_rgba(255,182,193,0.3)] space-y-6 sm:space-y-8 transform transition-transform duration-500">
+      
+      <!-- Visual Elegant Ribbon / Satin Bow Graphic representing a luxury gift -->
+      <div class="relative w-28 h-28 mx-auto flex items-center justify-center">
+        <!-- Golden outer glow -->
+        <div class="absolute inset-0 bg-brandGold/35 rounded-full blur-md animate-pulse"></div>
+        <!-- Bow Graphic -->
+        <div class="relative z-10 w-24 h-24 bg-gradient-to-br from-brandPink to-[#f299a8] rounded-full flex flex-col items-center justify-center shadow-lg border border-white/40">
+          <span class="text-4xl">🎁</span>
+          <!-- Soft satin ribbon tail -->
+          <div class="absolute -bottom-2 w-4 h-6 bg-brandPink/80 rounded-b-md transform -rotate-12"></div>
+          <div class="absolute -bottom-2 w-4 h-6 bg-[#f299a8]/80 rounded-b-md transform rotate-12"></div>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <h1 class="text-2xl sm:text-3xl font-bold font-amiri text-[#8c4d44] tracking-wide">
+          هذه هدية خاصة جداً…
+        </h1>
+        <p class="text-xs sm:text-sm text-[#7c5651] font-light leading-relaxed px-4">
+          صندوق الوداد مغلق برمزٍ يحفظ تفاصيله، أدخلي الرقم السري لفتحه وتأمل ما يحمله قلبي لكِ 🌸
+        </p>
+      </div>
+
+      <!-- Password Input Container -->
+      <div class="space-y-4 max-w-[280px] mx-auto">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="password-input" 
+            maxlength="10"
+            placeholder="أدخلي كلمة السر لفتح الصندوق…" 
+            class="w-full text-center px-4 py-3 bg-white/95 border border-brandPink/50 focus:border-brandDarkRose rounded-full text-[#5c3c38] font-bold tracking-widest placeholder-[#a07f7a]/60 outline-none transition-all shadow-inner text-sm focus:ring-2 focus:ring-brandPink/40"
+            onkeydown="if(event.key === 'Enter') checkPassword()"
+          />
+        </div>
+        <p id="error-message" class="text-xs text-brandDarkRose font-medium min-h-[1.25rem] opacity-0 transition-opacity duration-300"></p>
+      </div>
+
+      <div>
+        <button
+          onclick="checkPassword()"
+          class="px-10 py-3.5 bg-gradient-to-r from-brandPink via-brandCream to-brandGold text-[#70423c] font-bold border border-brandPink/35 hover:border-brandGold rounded-full text-sm tracking-wider transition-all duration-300 hover:shadow-[0_8px_25px_rgba(255,182,193,0.3)] active:scale-95"
+        >
+          افتحي الهدية 🌸
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Floating Elegant Sound Control HUD (Tied to YouTube Player)
        Sized specifically for excellent touch targets on mobile viewports (w-12 h-12 / 48px)
   -->
@@ -152,7 +222,7 @@
   </div>
 
   <!-- 1. BRIGHT OPENING HERO SCENE -->
-  <div id="opening-scene" class="fixed inset-0 z-50 flex flex-col justify-center items-center p-4 sm:p-6 text-center select-none overflow-hidden bg-gradient-to-tr from-brandBlush via-brandCream to-brandGold">
+  <div id="opening-scene" class="fixed inset-0 z-50 flex flex-col justify-center items-center p-4 sm:p-6 text-center select-none overflow-hidden bg-gradient-to-tr from-brandBlush via-brandCream to-brandGold hidden">
     <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#FFB6C1_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none"></div>
     
     <div class="max-w-3xl space-y-8 relative z-10 px-4">
@@ -218,7 +288,7 @@
         <div class="md:col-span-7 space-y-4 md:space-y-6 text-right order-2 md:order-1">
           <span class="text-[10px] sm:text-[11px] text-brandDarkRose bg-brandBlush/40 px-3 py-1 rounded-full font-bold uppercase inline-block">القصيدة الأولى</span>
           <h3 class="text-fluid-heading font-bold font-amiri text-[#5c3c38] leading-snug">
-            “ما كنتُ أظن أن اسمًا واحدًا يمكن أن يغيّر هذا الشعور داخلي… حتى عرفتكِ يا تسنيم.”
+            “ما كنتُ أظن أن اسمًا واحدًا يمكن أن يغيّر this الشعور داخلي… حتى عرفتكِ يا تسنيم.”
           </h3>
           <p class="text-[#7c5651] text-sm sm:text-base leading-relaxed font-light">
             اسمكِ العذب أصبح مفتاحاً لكل سلام وسكينة تسكن أعماقي، وصوتكِ ريحاً دافئة تهبّ على فضاء روحي بجمال لا نظير له.
@@ -417,7 +487,7 @@
     <!-- 6. SECRET MESSAGE SECTION (Locked glowing pastel card) -->
     <section class="max-w-xl mx-auto px-2">
       <div class="relative bg-white/80 border border-brandPink/40 p-6 sm:p-8 rounded-3xl text-center space-y-6 overflow-hidden shadow-[0_20px_45px_rgba(255,182,193,0.15)] backdrop-blur-xl">
-        <div id="light-burst" class="absolute inset-0 bg-gradient-to-r from-brandBlush via-brandGold to-brandBlush blur-md animate-ping pointer-events-none opacity-0 transition-opacity duration-500"></div>
+        <div id="light-burst-secret" class="absolute inset-0 bg-gradient-to-r from-brandBlush via-brandGold to-brandBlush blur-md animate-ping pointer-events-none opacity-0 transition-opacity duration-500"></div>
         
         <div class="w-11 h-11 mx-auto rounded-full bg-brandGold/30 border border-brandGold flex items-center justify-center text-xl animate-bounce">🔑</div>
 
@@ -564,6 +634,41 @@
       console.log("Image fallback triggered for index: ", idx);
     }
 
+    // Password validation gate with sweet shake effects
+    function checkPassword() {
+      const pin = document.getElementById('password-input').value.trim();
+      const err = document.getElementById('error-message');
+      const box = document.getElementById('gift-box-card');
+
+      if (pin === '2010') {
+        err.style.opacity = '0';
+        box.style.transform = 'scale(0.95)';
+        
+        // Unlocking sequence
+        setTimeout(() => {
+          document.getElementById('gift-gate').style.opacity = '0';
+          document.getElementById('gift-gate').style.pointerEvents = 'none';
+          document.getElementById('opening-scene').classList.remove('hidden');
+          
+          // Trigger browser interaction play automatically
+          playGlobalAudio();
+          
+          setTimeout(() => {
+            document.getElementById('gift-gate').classList.add('hidden');
+          }, 1000);
+        }, 400);
+
+      } else {
+        err.innerText = "حاول مرة أخرى يا جميلة قلبي 🤍";
+        err.style.opacity = '1';
+        box.classList.add('animate-shake');
+        
+        setTimeout(() => {
+          box.classList.remove('animate-shake');
+        }, 500);
+      }
+    }
+
     // Populate memory gallery
     function renderGallery() {
       const container = document.getElementById('gallery-grid');
@@ -665,7 +770,7 @@
 
     // Secret Message unlocked trigger (Updated with subtle Egyptian touches)
     function revealSecret() {
-      const burst = document.getElementById('light-burst');
+      const burst = document.getElementById('light-burst-secret');
       burst.classList.remove('opacity-0');
       burst.classList.add('opacity-100');
       setTimeout(() => {
@@ -691,6 +796,7 @@
       `;
     }
 
+    // Hide Secret Message
     function hideSecret() {
       document.getElementById('locked-card-content').innerHTML = `
         <button
@@ -744,7 +850,7 @@
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     };
 
-    // Global unlock handler
+    // Global unlock handler (Fallback listener)
     window.addEventListener('click', () => {
       if (hasStarted && !isPlaying && ytPlayer && typeof ytPlayer.playVideo === 'function') {
         playGlobalAudio();
